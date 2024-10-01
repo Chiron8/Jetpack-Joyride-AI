@@ -25,9 +25,7 @@ class Player:
             screen.blit(self.fly, (self.pos.x, self.pos.y))
             self.pos.y -= self.dtn + 0.2
             if self.dtn < 30:
-                self.dtn += 0.7
-        else:
-            if self.pos.y < screen.get_height() / 10 * 8:
+                self.dtn += 0.7 
                 screen.blit(self.land, (self.pos.x, self.pos.y))
             else:
                 screen.blit(self.run, (self.pos.x, self.pos.y))
@@ -36,7 +34,7 @@ class Player:
             self.pos.y -= self.dtn
 
         self.rect.topleft = (self.pos.x, self.pos.y)  # Hitbox
-        pygame.draw.rect(screen, (0, 255, 0), self.rect)
+        #pygame.draw.rect(screen, (0, 255, 0), self.rect)
         
         # Boundary constraints
         if self.pos.y > screen.get_height() / 10 * 8:
@@ -64,11 +62,14 @@ class Obstacle:
         if self.pos.x < -self.image.get_width():
             angle = random.choice(self.angles)
             self.image = pygame.image.load("Assets/obstacles/Zapper.png")  # Reset image to avoid stacking rotations
+            self.rect = self.image.get_rect(topleft=(self.pos.x, self.pos.y))
+            self.rect = pygame.transform.rotate(self.rect, angle)
             self.image = pygame.transform.rotate(self.image, angle)
             self.pos.x = screen.get_width() * 1.2
             self.pos.y = random.randint(100, round(screen.get_height() * 0.8))
             self.rect = self.image.get_rect(topleft=(self.pos.x, self.pos.y))
-#        pygame.draw.rect(screen, (255, 0, 0), self.image.get_rect(topleft=(self.pos.x, self.pos.y)))
+            
+        pygame.draw.rect(screen, (255, 0, 0), self.image.get_rect(topleft=(self.pos.x, self.pos.y)))
 
 def game_loop():
     global distance, counter, speed
@@ -93,14 +94,14 @@ def game_loop():
 
 
         # Collision detection
-        #if player.rect.colliderect(obstacle.rect):
-        #    font = pygame.font.SysFont("Calibri", 100)
-        #    game_over_text = font.render("Game Over", True, (255, 0, 0))
-        #    screen.blit(game_over_text, (screen.get_width() // 2 - game_over_text.get_width() // 2,
-        #                                 screen.get_height() // 2 - game_over_text.get_height() // 2))
-        #    pygame.display.flip()
-        #    pygame.time.delay(2000)  # Pause for 2 seconds before quitting
-        #    running = False
+        if player.rect.colliderect(obstacle.rect):
+            font = pygame.font.SysFont("Calibri", 100)
+            game_over_text = font.render("Game Over", True, (255, 0, 0))
+            screen.blit(game_over_text, (screen.get_width() // 2 - game_over_text.get_width() // 2,
+                                         screen.get_height() // 2 - game_over_text.get_height() // 2))
+            pygame.display.flip()
+            pygame.time.delay(2000)  # Pause for 2 seconds before quitting
+            running = False
 
         # Render distance text
         font = pygame.font.SysFont("Calibri", 50)
@@ -117,7 +118,7 @@ def game_loop():
             distance += 1
             counter = 0
             if distance % 100 == 0:
-                speed *= 1.1
+                speed *= 2
 
     pygame.quit()
 
